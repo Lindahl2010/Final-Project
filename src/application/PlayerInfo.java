@@ -5,7 +5,7 @@ import org.jsoup.nodes.Node;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Player {
+public class PlayerInfo {
 
 	private final SimpleStringProperty initial;
 	private final SimpleStringProperty fname;
@@ -18,7 +18,7 @@ public class Player {
 	private final SimpleStringProperty born;
 	private final SimpleStringProperty birthplace;
 	
-	public Player(String initial, String fname, String lname, String playerNum, String position, String shoots, String height, String weight, String born, String birthplace) {
+	public PlayerInfo(String initial, String fname, String lname, String playerNum, String position, String shoots, String height, String weight, String born, String birthplace) {
 		
 		this.initial = new SimpleStringProperty(initial);
 		this.fname = new SimpleStringProperty(fname);
