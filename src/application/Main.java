@@ -1,6 +1,12 @@
 package application;
 	
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,15 +19,15 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.fxml.FXMLLoader;
 
 
 public class Main extends Application {
 	
-	public static void main(String[] args) throws IOException{
-		launch(args);
-	}
+
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception{	
@@ -31,11 +37,22 @@ public class Main extends Application {
 		Scene scene = new Scene(parent);
 		
 		primaryStage.setTitle("NHL.com Team Scraper");
+		primaryStage.getIcons().add(new Image("NHL-Logo.png"));	
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
 	}
 	
+	public static void main(String[] args) throws IOException{
+		launch(args);
+	}
+	
+	/**
+	 * This method connects to the NHL website and searches for the team specified by the user.
+	 * @param team
+	 * @return teamURL URL of the team selected by the user through their input into the program.
+	 * @throws Exception
+	 */
 	public static Document searchTeam(String team) throws Exception{
 		
 		Document teamURL = null;
@@ -56,12 +73,49 @@ public class Main extends Application {
 		return doc.getElementsByClass("a.megamenu-club-logobar__logo").select("img").attr("src");
 		
 	}
+	
+	/**
+	 * 
+	 * @param playerList
+	 */
+	public static void createPlayerDB(ArrayList<String> playerList) {
+		
+		try {
+			String DB_URL = "jdbc:mysql://db4free.net:3306/nhlteams";
+			String USER = "lindahl2010";
+			String PASSWORD = "$JymFM8u";
+			
+			Connection myConn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+			Statement drop_stmt = myConn.createStatement();
+			String drop = "DROP TABLE TeamTable";
+			drop_stmt.executeUpdate(drop);
+			
+			Statement stmt = myConn.createStatement();
+			String create = "CREATE TABLE TeamTable" + 
+					" (num INTEGER not NULL, " +
+					" ";
+			
+			
+		}catch(SQLException i) {
+			i.printStackTrace();
+		}
+		
+		
+		
+	}
 
-	public static ObservableList<TeamName> getTeamNames(Document doc){
+	/**
+	 * This method searches through the team page on the NHL website and creates a list of all the teams.
+	 * @param teamPage
+	 * @return teamName Returns a list of the team names off of the NHL team page
+	 * @throws Exception
+	 */
+	public static ObservableList<TeamName> getTeamNames(Document teamPage) throws Exception{
 		
 		ObservableList<TeamName> teamName = FXCollections.observableArrayList();
 		String city = null, name = null;
-		Elements teams = doc.select("a.team-city");
+		
+		Elements teams = teamPage.select("a.team-city");
 		for(Element team : teams) {
 			if(team.classNames() != null) {
 				city = team.child(0).text();
@@ -74,6 +128,11 @@ public class Main extends Application {
 		
 	}
 	
+	/**
+	 * This method is used to pull all of the names of the players from the team that the user specifies.
+	 * @param doc
+	 * @return playerNames Returns a list of the player names on the specified team.
+	 */
 	public static ObservableList<PlayerName> getPlayerNames(Document doc){
 		
 		ObservableList<PlayerName> playerNames = FXCollections.observableArrayList();
@@ -92,9 +151,16 @@ public class Main extends Application {
 		
 	}
 	
+	/**
+	 * This method is used to grab all of the information about each player and create an object instance for each player.
+	 * @param doc
+	 * @return playerInfo Returns all of the player info associated with each player from the specified team.
+	 */
 	public static ObservableList<PlayerInfo> getPlayerInfo(Document doc){
 		
 		ObservableList<PlayerInfo> playerInfo = FXCollections.observableArrayList();
+		long right = 0;
+		long left = 0;
 		
 		Elements data = doc.select("td.number-col.fixed-width-font");
 		for(Element set : data) {
@@ -108,12 +174,23 @@ public class Main extends Application {
 			String born = div.child(5).child(0).text();
 			String birthplace = div.child(6).text();
 			
-			playerInfo.add(new PlayerInfo(playerNum, position, shoots, height, weight, born, birthplace));
+			//Streams API  
+			right = playerInfo
+				.stream()
+				.filter(s -> s.getShoots().startsWith("R"))
+				.count();
+			
+			left = playerInfo
+				.stream()
+				.filter(s -> s.getShoots().startsWith("L"))
+				.count();
+			 
+			playerInfo.add(new PlayerInfo(playerNum, position, shoots, height, weight, born, birthplace, right, left));
+			
+
 		}
 		
 		return playerInfo;
 		
 	}
-	
-	
 }

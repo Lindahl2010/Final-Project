@@ -2,14 +2,13 @@ package application;
 
 import org.jsoup.nodes.Node;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class PlayerInfo {
 
-	private final SimpleStringProperty initial;
-	private final SimpleStringProperty fname;
-	private final SimpleStringProperty lname;
 	private final SimpleStringProperty playerNum;
 	private final SimpleStringProperty position;
 	private final SimpleStringProperty shoots;
@@ -17,12 +16,11 @@ public class PlayerInfo {
 	private final SimpleStringProperty weight;
 	private final SimpleStringProperty born;
 	private final SimpleStringProperty birthplace;
+	private final SimpleLongProperty right;
+	private final SimpleLongProperty left;
 	
-	public PlayerInfo(String initial, String fname, String lname, String playerNum, String position, String shoots, String height, String weight, String born, String birthplace) {
+	public PlayerInfo(String playerNum, String position, String shoots, String height, String weight, String born, String birthplace, Long right, Long left) {
 		
-		this.initial = new SimpleStringProperty(initial);
-		this.fname = new SimpleStringProperty(fname);
-		this.lname = new SimpleStringProperty(lname);
 		this.playerNum = new SimpleStringProperty(playerNum);
 		this.position = new SimpleStringProperty(position);
 		this.shoots = new SimpleStringProperty(shoots);
@@ -30,30 +28,9 @@ public class PlayerInfo {
 		this.weight = new SimpleStringProperty(weight);
 		this.born = new SimpleStringProperty(born);
 		this.birthplace = new SimpleStringProperty(birthplace);
+		this.right = new SimpleLongProperty(right);
+		this.left = new SimpleLongProperty(left);
 		
-	}
-	
-	public String getInitial() {
-		return initial.get();
-	}
-	
-	public SimpleStringProperty initialProperty() {
-		return initial;
-	}
-	
-	public String getFname() {
-		return fname.get();
-	}
-	
-	public SimpleStringProperty fnameProperty() {
-		return fname;
-	}
-	public String getLname() {
-		return lname.get();
-	}
-	
-	public SimpleStringProperty lnameProperty() {
-		return lname;
 	}
 	
 	public String getPlayerNum() {
@@ -111,4 +88,21 @@ public class PlayerInfo {
 	public SimpleStringProperty birthplaceProperty() {
 		return birthplace;
 	}
+	
+	public Long getRight() {
+		return right.get();
+	}
+	
+	public SimpleLongProperty rightProperty() {
+		return right;
+	}
+	
+	public Long getLeft() {
+		return left.get();
+	}
+	
+	public SimpleLongProperty leftProperty() {
+		return left;
+	}
+	
 }
