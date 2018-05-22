@@ -66,11 +66,48 @@ public class Main extends Application {
 		}
 		
 		return teamURL;
+		
 	}
 	
 	public static String imageURL(Document doc) {
 		
 		return doc.getElementsByClass("a.megamenu-club-logobar__logo").select("img").attr("src");
+		
+	}
+	
+	public static void createNamesDB(ObservableList<PlayerName> playerList) {
+		
+		try {
+			String DB_URL = "jdbc:mysql://db4free.net:3306/nhlteams";
+			String USER = "lindahl2010";
+			String PASSWORD = "$JymFM8u";
+			
+			Connection myConn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+//			Statement drop_stmt = myConn.createStatement();
+//			String drop = "DROP TABLE TeamTable";
+//			drop_stmt.executeUpdate(drop);
+			
+			Statement stmt = myConn.createStatement();
+			String create = "CREATE TABLE TeamTable" + 
+					" (num INTEGER not NULL, " +
+					" Initial VARCHAR(255), " + 
+					" FirstName VARCHAR(255), " +
+					" LastName VARCHAR(255), " + 
+					" PRIMARY KEY ( num ))";
+			
+			stmt.executeUpdate(create);
+			
+			for(int num = 0; num < playerList.size(); num++) {
+				PlayerName initial = playerList.get(num);
+				PlayerName fname = playerList.get(num);
+				PlayerName lname = playerList.get(num);
+				String insert = "INSERT INTO TeamTable" + 
+						"VALUES ('"+num+"', '"+initial+"', '"+fname+"', '"+lname+"')";
+				stmt.executeUpdate(insert);
+			}
+		}catch(SQLException i) {
+			i.printStackTrace();
+		}	
 		
 	}
 	
@@ -94,7 +131,6 @@ public class Main extends Application {
 			String create = "CREATE TABLE TeamTable" + 
 					" (num INTEGER not NULL, " +
 					" ";
-			
 			
 		}catch(SQLException i) {
 			i.printStackTrace();
@@ -147,6 +183,8 @@ public class Main extends Application {
 			playerNames.add(new PlayerName(initial, fname, lname));
 		}
 		
+		createNamesDB(playerNames);
+
 		return playerNames;
 		
 	}
@@ -187,7 +225,6 @@ public class Main extends Application {
 			 
 			playerInfo.add(new PlayerInfo(playerNum, position, shoots, height, weight, born, birthplace, right, left));
 			
-
 		}
 		
 		return playerInfo;
